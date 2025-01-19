@@ -1,17 +1,21 @@
+const path = require("path")
+
 const express = require("express")
+const bodyParser = require("body-parser")
 
 const app = express()
 
+const adminRoutes = require("./routes/admin")
+const shopRoutes = require("./routes/shop")
+
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(express.static(path.join(__dirname, "public")))
+
+app.use("/admin", adminRoutes)
+app.use(shopRoutes)
+
 app.use((req, res, next) => {
-  console.log("I am in middleware")
-  next()
+  res.status(404).sendFile(path.join(__dirname, "views", "404.html"))
 })
 
-app.use("/add-product", (req, res, next) => {
-  console.log("/add-product".startsWith("/"))
-  res.send("<h1>Hello from express add product</h1>")
-})
-app.use("/", (req, res) => {
-  res.send("<h1>Will i run </h1>")
-})
 app.listen(3000)
