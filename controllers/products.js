@@ -1,6 +1,6 @@
+const fs = require("fs")
 // storage for products
-const products = []
-
+const Product = require("../models/product")
 // GET ADD PRODUCT PAGE
 exports.getAddProduct = (req, res, next) => {
   // res.sendFile(path.join(rootDir, "views", "add-product.html"))
@@ -13,17 +13,21 @@ exports.getAddProduct = (req, res, next) => {
 // POST on ADD PRODUCT PAGE
 exports.postAddProduct = (req, res, next) => {
   const { title } = req.body
-  const newPost = { title }
-  products.push(newPost)
+  const product = new Product(title)
+  product.save()
+  // products.push(newPost)
+
   res.redirect("/")
 }
 
 // GET products
 exports.getProducts = (req, res, next) => {
   // res.sendFile(path.join(rootDir, "views", "shop.html"))
-  res.render("shop", {
-    prods: products,
-    pageTitle: "Shop",
-    path: "/",
+  Product.fetchProducts((products) => {
+    res.render("shop", {
+      prods: products,
+      pageTitle: "Shop",
+      path: "/",
+    })
   })
 }
