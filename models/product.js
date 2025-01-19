@@ -2,8 +2,9 @@ const path = require("path")
 const fs = require("fs")
 const productPath = path.join(require.main.path, "data", "products.json")
 const products = []
-// callbacks has the access to parsed data
 
+// callbacks has the access to parsed data
+// run callback when data is ready
 const getProductFromFile = (callback) => {
   fs.readFile(productPath, (err, fileContentInString) => {
     // if error in reading file return empty array to callback
@@ -35,10 +36,7 @@ module.exports = class Product {
     })
   }
   static fetchProducts(callback) {
-    // fs.readFile(productPath, (err, fileContentInString) => {
-    //   if (err) callback([])
-    //   callback(JSON.parse(fileContentInString))
-    // })
+    //  pass the callback for products
     getProductFromFile(callback)
   }
 }
