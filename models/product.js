@@ -1,42 +1,40 @@
-const path = require("path")
-const fs = require("fs")
-const productPath = path.join(require.main.path, "data", "products.json")
-const products = []
+const fs = require('fs');
+const path = require('path');
 
-// callbacks has the access to parsed data
-// run callback when data is ready
-const getProductFromFile = (callback) => {
-  fs.readFile(productPath, (err, fileContentInString) => {
-    // if error in reading file return empty array to callback
-    if (err) return callback([])
-    // if succesfully return parsedJson paroduc array
-    const parsedProduct = JSON.parse(fileContentInString)
-    return callback(parsedProduct)
-  })
-}
+const p = path.join(
+  path.dirname(process.mainModule.filename),
+  'data',
+  'products.json'
+);
+
+const getProductsFromFile = cb => {
+  fs.readFile(p, (err, fileContent) => {
+    if (err) {
+      cb([]);
+    } else {
+      cb(JSON.parse(fileContent));
+    }
+  });
+};
 
 module.exports = class Product {
-  constructor(title) {
-    this.title = title
+  constructor(title, imageUrl, description, price) {
+    this.title = title;
+    this.imageUrl = imageUrl;
+    this.description = description;
+    this.price = price;
   }
-  // read the file
-  // store the read file in array
-  // push the new product to that array
-  // write the file
 
   save() {
-    getProductFromFile((products) => {
-      products.push(this) // Add the current product
+    getProductsFromFile(products => {
+      products.push(this);
+      fs.writeFile(p, JSON.stringify(products), err => {
+        console.log(err);
+      });
+    });
+  }
 
-      fs.writeFile(productPath, JSON.stringify(products), (err) => {
-        if (err) {
-          console.error("Error saving product:", err)
-        }
-      })
-    })
+  static fetchAll(cb) {
+    getProductsFromFile(cb);
   }
-  static fetchProducts(callback) {
-    //  pass the callback for products
-    getProductFromFile(callback)
-  }
-}
+};
